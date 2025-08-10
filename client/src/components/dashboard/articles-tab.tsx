@@ -9,10 +9,14 @@ import { apiRequest } from "@/lib/queryClient";
 import { Loading } from "@/components/ui/loading";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { ContentRecommendations } from "@/components/ai/content-recommendations";
+import { ArticleForm } from "@/components/forms/article-form";
 import type { Article } from "@shared/schema";
 
 export function ArticlesTab() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -60,6 +64,22 @@ export function ArticlesTab() {
     return <Loading className="h-64" text="Loading articles..." />;
   }
 
+  if (showCreateForm || editingArticle) {
+    return (
+      <ArticleForm
+        article={editingArticle || undefined}
+        onSuccess={() => {
+          setShowCreateForm(false);
+          setEditingArticle(null);
+        }}
+        onCancel={() => {
+          setShowCreateForm(false);
+          setEditingArticle(null);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -70,7 +90,10 @@ export function ArticlesTab() {
             Manage your content with multi-language support
           </p>
         </div>
-        <Button className="flex items-center space-x-2">
+        <Button 
+          className="flex items-center space-x-2"
+          onClick={() => setShowCreateForm(true)}
+        >
           <Plus className="h-4 w-4" />
           <span>New Article</span>
         </Button>
@@ -98,7 +121,7 @@ export function ArticlesTab() {
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               {searchQuery ? "No articles match your search criteria." : "Get started by creating your first article."}
             </p>
-            <Button>
+            <Button onClick={() => setShowCreateForm(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create Article
             </Button>
@@ -129,7 +152,11 @@ export function ArticlesTab() {
                     <span>{article.viewCount || 0} views</span>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setEditingArticle(article)}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button 
@@ -147,6 +174,9 @@ export function ArticlesTab() {
           ))}
         </div>
       )}
+
+      {/* AI Content Recommendations */}
+      <ContentRecommendations />
     </div>
   );
 }

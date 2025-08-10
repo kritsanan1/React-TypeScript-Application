@@ -9,10 +9,13 @@ import { apiRequest } from "@/lib/queryClient";
 import { Loading } from "@/components/ui/loading";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { ProductForm } from "@/components/forms/product-form";
 import type { Product } from "@shared/schema";
 
 export function ProductsTab() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 

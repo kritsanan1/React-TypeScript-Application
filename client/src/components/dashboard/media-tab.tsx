@@ -9,10 +9,13 @@ import { apiRequest } from "@/lib/queryClient";
 import { Loading } from "@/components/ui/loading";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { MediaForm } from "@/components/forms/media-form";
 import type { Media } from "@shared/schema";
 
 export function MediaTab() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showUploadForm, setShowUploadForm] = useState(false);
+  const [editingMedia, setEditingMedia] = useState<Media | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -84,6 +87,22 @@ export function MediaTab() {
     return <Loading className="h-64" text="Loading media files..." />;
   }
 
+  if (showUploadForm || editingMedia) {
+    return (
+      <MediaForm
+        media={editingMedia || undefined}
+        onSuccess={() => {
+          setShowUploadForm(false);
+          setEditingMedia(null);
+        }}
+        onCancel={() => {
+          setShowUploadForm(false);
+          setEditingMedia(null);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -94,7 +113,10 @@ export function MediaTab() {
             Organize and manage your media files
           </p>
         </div>
-        <Button className="flex items-center space-x-2">
+        <Button 
+          className="flex items-center space-x-2"
+          onClick={() => setShowUploadForm(true)}
+        >
           <Upload className="h-4 w-4" />
           <span>Upload Media</span>
         </Button>

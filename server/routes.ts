@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { analyticsService } from "./analytics";
+import { generateContentRecommendations, enhanceArticleContent, generateProductDescription, analyzeContentPerformance } from "./ai";
 import {
   insertArticleSchema,
   insertMediaSchema,
@@ -329,6 +331,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recommendations:", error);
       res.status(500).json({ message: "Failed to fetch recommendations" });
+    }
+  });
+
+  // AI-powered routes
+  app.get('/api/ai/recommendations', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const recommendations = await storage.getRecommendations(userId, 'content');
+      
+      // Get the latest recommendations, if any
+      const latestRecommendations = recommendations.length > 0 
+        ? recommendations[0].data.recommendations || []
+        : [];
+      
+      res.json(latestRecommendations);
+    } catch (error) {
+      console.error("Error fetching AI recommendations:", error);
+      res.status(500).json({ message: "Failed to fetch recommendations" });
+    }
+  });
+
+  app.post('/api/ai/generate-recommendations', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get user's recent articles for context
+      const recentArticles = await storage.getArticles(userId, 10);
+      
+      const recommendations = await generateContentRecommendations(userId, recentArticles);
+      
+      // Store the recommendations
+      await storage.createRecommendation({
+        userId,
+        type: 'content',
+        data: { recommendations },
+        confidence: 0.8,
+      });
+      
+      res.json({ recommendations });
+    } catch (error) {
+      console.error("Error generating recommendations:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to generate recommendations" 
+      });
+    }
+  });
+
+  app.post('/api/ai/enhance-content', isAuthenticated, async (req: any, res) => {
+    try {
+      const { title, content } = req.body;
+      
+      if (!title || !content) {
+        return res.status(400).json({ message: "Title and content are required" });
+      }
+      
+      const enhancement = await enhanceArticleContent(title, content);
+      res.json(enhancement);
+    } catch (error) {
+      console.error("Error enhancing content:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to enhance content" 
+      });
     }
   });
 

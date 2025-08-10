@@ -33,6 +33,7 @@ export interface IStorage {
   updateArticle(id: number, article: Partial<InsertArticle>): Promise<Article>;
   deleteArticle(id: number): Promise<void>;
   searchArticles(query: string, userId?: string): Promise<Article[]>;
+  incrementArticleViews(id: number): Promise<void>;
   
   // Media operations
   getMediaFiles(userId?: string, limit?: number): Promise<Media[]>;
@@ -51,6 +52,7 @@ export interface IStorage {
   // Analytics operations
   createAnalyticsEvent(analytics: InsertAnalytics): Promise<Analytics>;
   getAnalytics(userId?: string, startDate?: Date, endDate?: Date): Promise<Analytics[]>;
+  getAnalyticsByUserAndDateRange(userId: string, startDate: Date, endDate: Date): Promise<Analytics[]>;
   
   // AI recommendations operations
   createRecommendation(recommendation: InsertAiRecommendation): Promise<AiRecommendation>;
@@ -111,6 +113,13 @@ export class DatabaseStorage implements IStorage {
 
   async deleteArticle(id: number): Promise<void> {
     await db.delete(articles).where(eq(articles.id, id));
+  }
+
+  async incrementArticleViews(id: number): Promise<void> {
+    await db
+      .update(articles)
+      .set({ viewCount: sql`${articles.viewCount} + 1` })
+      .where(eq(articles.id, id));
   }
 
   async searchArticles(query: string, userId?: string): Promise<Article[]> {
@@ -213,6 +222,20 @@ export class DatabaseStorage implements IStorage {
     }
 
     return await query;
+  }
+
+  async getAnalyticsByUserAndDateRange(userId: string, startDate: Date, endDate: Date): Promise<Analytics[]> {
+    return await db
+      .select()
+      .from(analytics)
+      .where(
+        and(
+          eq(analytics.userId, userId),
+          sql`${analytics.timestamp} >= ${startDate}`,
+          sql`${analytics.timestamp} <= ${endDate}`
+        )
+      )
+      .orderBy(desc(analytics.timestamp));
   }
 
   // AI recommendations operations
