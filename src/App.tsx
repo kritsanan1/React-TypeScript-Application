@@ -1,34 +1,17 @@
-import React from 'react';
-import { Sparkles, Code, Palette, Zap } from 'lucide-react';
+import { Code, Palette, Zap } from 'lucide-react';
+import { AnimatedBackground, IconCluster, FeatureCard } from './components/index.ts';
 
 function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-cyan-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
-      </div>
+      <AnimatedBackground />
 
       {/* Main content */}
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
         <div className="text-center max-w-4xl mx-auto">
           {/* Icon cluster */}
-          <div className="flex justify-center mb-8 space-x-4">
-            <div className="p-3 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 transform hover:scale-110 transition-transform duration-300">
-              <Sparkles className="w-8 h-8 text-indigo-600" />
-            </div>
-            <div className="p-3 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 transform hover:scale-110 transition-transform duration-300 delay-100">
-              <Code className="w-8 h-8 text-purple-600" />
-            </div>
-            <div className="p-3 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 transform hover:scale-110 transition-transform duration-300 delay-200">
-              <Palette className="w-8 h-8 text-pink-600" />
-            </div>
-            <div className="p-3 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 transform hover:scale-110 transition-transform duration-300 delay-300">
-              <Zap className="w-8 h-8 text-blue-600" />
-            </div>
-          </div>
+          <IconCluster />
 
           {/* Main heading */}
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 leading-tight">
@@ -49,29 +32,24 @@ function App() {
 
           {/* Feature cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-            <div className="group p-6 bg-white/60 backdrop-blur-sm rounded-3xl border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:transform hover:-translate-y-2">
-              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Code className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Code</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Transform ideas into beautiful, functional applications with intelligent assistance.</p>
-            </div>
-
-            <div className="group p-6 bg-white/60 backdrop-blur-sm rounded-3xl border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:transform hover:-translate-y-2">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Palette className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Design</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Create stunning user interfaces with modern design principles and attention to detail.</p>
-            </div>
-
-            <div className="group p-6 bg-white/60 backdrop-blur-sm rounded-3xl border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:transform hover:-translate-y-2">
-              <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Deploy</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Launch your creations to the world with seamless deployment and optimization.</p>
-            </div>
+            <FeatureCard
+              icon={Code}
+              title="Code"
+              description="Transform ideas into beautiful, functional applications with intelligent assistance."
+              gradient="from-indigo-500 to-purple-600"
+            />
+            <FeatureCard
+              icon={Palette}
+              title="Design"
+              description="Create stunning user interfaces with modern design principles and attention to detail."
+              gradient="from-purple-500 to-pink-600"
+            />
+            <FeatureCard
+              icon={Zap}
+              title="Deploy"
+              description="Launch your creations to the world with seamless deployment and optimization."
+              gradient="from-pink-500 to-blue-600"
+            />
           </div>
 
           {/* Footer text */}

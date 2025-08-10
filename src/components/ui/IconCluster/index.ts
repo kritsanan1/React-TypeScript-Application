@@ -1,0 +1,1 @@
+export { default as IconCluster } from './IconCluster.tsx';
